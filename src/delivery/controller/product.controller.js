@@ -14,12 +14,8 @@ const ProductController = (productService) => {
 
     const list = async (req, res) => {
         try {
-            const { keyword, page, size, sortBy, sortType } = req.query
-            const { count, rows } = await findAllProduct(keyword, page, size, sortBy, sortType);
-            res.json(ResponseMessage().pagination(
-                res.statusCode, 'SUCCESS', rows,
-                keyword, page, count, size, sortBy, sortType
-            ));
+            const products = await findAllProduct();
+            res.json(ResponseMessage().successMessage(res.statusCode, 'SUCCESS', products));
         } catch (err) {
             res.status(400).json(ResponseMessage().errorMessage(res.statusCode, err.message))
         }

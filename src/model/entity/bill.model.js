@@ -1,13 +1,13 @@
 const {DataTypes} = require('sequelize');
-const MST_PRODUCT = 'mst_product';
+const TRX_BILL = 'trx_bill';
 module.exports = (db) => {
-    return db.define(MST_PRODUCT, {
+    return db.define(TRX_BILL, {
         id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
         },
-        name: DataTypes.STRING(40),
+        transDate: DataTypes.DATE,
     }, {
         freezeTableName: true,
         underscored: true,

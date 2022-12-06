@@ -1,5 +1,5 @@
-const Customer = require('../model/customer.model');
-const {Op, Error} = require('sequelize');
+const Customer = require('../model/entity/customer.model');
+const {Op} = require('sequelize');
 
 const CustomerRepository = (db) => {
     const create = async (payload) => {

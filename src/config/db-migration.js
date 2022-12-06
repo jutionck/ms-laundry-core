@@ -1,8 +1,8 @@
-const Customer = require('../model/customer.model');
-const Product = require('../model/product.model');
-const ProductPrice = require('../model/product-price.model');
-const Bill = require('../model/bill.model');
-const BillDetail = require('../model/bill-detail.model');
+const Customer = require('../model/entity/customer.model');
+const Product = require('../model/entity/product.model');
+const ProductPrice = require('../model/entity/product-price.model');
+const Bill = require('../model/entity/bill.model');
+const BillDetail = require('../model/entity/bill-detail.model');
 
 const DbMigration = async (db) => {
     const customer = Customer(db);

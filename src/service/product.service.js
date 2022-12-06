@@ -7,13 +7,9 @@ const ProductService = (productRepo) => {
             return err.message;
         }
     }
-    const findAllProduct = async (keyword, page, size, sortBy, sortType) => {
+    const findAllProduct = async () => {
         try {
-            if (isNaN(page) || isNaN(size)) {
-                page = 1, size = 10
-            }
-            const { count, rows } = await list(keyword, page, size, sortBy, sortType);
-            return { count, rows }
+            return await list();
         } catch (err) {
             return err.message;
         }
