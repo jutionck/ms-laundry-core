@@ -1,6 +1,7 @@
 const Product = require('../model/entity/product.model');
 const ProductPrice = require('../model/entity/product-price.model');
-const ProductPriceDto = require("../model/dto/product-price.dto");
+const ProductPriceDto = require("../model/dto/product.dto");
+const {Op} = require("sequelize");
 
 const ProductRepository = (db) => {
     const product = Product(db);
@@ -17,10 +18,21 @@ const ProductRepository = (db) => {
         }
     }
 
-    const list = async () => {
+    const list = async (keyword = '', page, size, sortBy = 'created_at', sortType = 'desc') => {
         try {
+            const offset = size * (page - 1);
             const productWithPrice = [];
-            const products =  await product.findAll({
+            const {count, rows} = await product.findAndCountAll({
+                where: {
+                    [Op.or]: [
+                        {name: {[Op.iLike]: `%${keyword}%`}},
+                    ]
+                },
+                offset: offset,
+                limit: size,
+                order: [
+                    [sortBy, sortType]
+                ],
                 include: {
                     model: productPrice,
                     where: {
@@ -28,10 +40,13 @@ const ProductRepository = (db) => {
                     }
                 }
             });
-            for (let i = 0; i < products.length; i++) {
-                productWithPrice.push(ProductPriceDto(products, i));
+
+            for (let i = 0; i < rows.length; i++) {
+                productWithPrice.push(ProductPriceDto(rows, i));
             }
-            return productWithPrice;
+
+            return {count, productWithPrice};
+
         } catch (err) {
             return err.message
         }
@@ -39,9 +54,15 @@ const ProductRepository = (db) => {
 
     const getById = async (id) => {
         try {
-            const product = await Product(db).findByPk(id);
-            if (!product) return `Product with value ID ${id} not found!`;
-            return product;
+            const prod = await product.findByPk(id, {
+                include: [
+                    {
+                        model: productPrice,
+                        where: {isActive: true}
+                    }]
+            });
+            if (!prod) return `Product with value ID ${id} not found!`;
+            return ProductPriceDto(prod);
         } catch (err) {
             return err.message
         }
@@ -49,9 +70,11 @@ const ProductRepository = (db) => {
 
     const remove = async (id) => {
         try {
-            const product = await Product(db).findByPk(id);
-            if (!product) return `Product with value ID ${id} not found!`;
-            return await Product(db).destroy({where: {id: id}});
+            const prod = await product.findByPk(id);
+            if (!prod) return `Product with value ID ${id} not found!`;
+            const result = await product.destroy({where: {id: id}});
+            await productPrice.destroy({where: {mstProductId: id}});
+            return result;
         } catch (err) {
             return err.message
         }
@@ -65,7 +88,11 @@ const ProductRepository = (db) => {
                 where: {id: payload.id},
                 returning: true
             });
-            await productPrice.update({price: payload.productPrice, mstProductId: updateProduct.id, isActive: payload.isActive}, {
+            await productPrice.update({
+                price: payload.productPrice,
+                mstProductId: updateProduct.id,
+                isActive: payload.isActive
+            }, {
                 where: {mstProductId: payload.id}
             })
             return updateProduct[1][0];
