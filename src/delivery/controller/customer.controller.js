@@ -8,7 +8,7 @@ const CustomerController = (customerService) => {
             const customer = await registerNewCustomer(payload);
             if (typeof customer !== 'object') {
                 res.status(400).json(ResponseMessage().errorMessage(res.statusCode, customer))
-                return
+                return;
             }
             res.json(ResponseMessage().successMessage(res.statusCode, 'SUCCESS', customer))
         } catch (err) {
@@ -35,7 +35,7 @@ const CustomerController = (customerService) => {
             const customer = await findCustomerById(id);
             if (typeof customer !== 'object') {
                 res.status(400).json(ResponseMessage().errorMessage(res.statusCode, customer))
-                return
+                return;
             }
             res.json(ResponseMessage().successMessage(res.statusCode, 'SUCCESS', customer))
         } catch (err) {
@@ -49,7 +49,7 @@ const CustomerController = (customerService) => {
             const customer = await updateOldCustomer(payload);
             if (typeof customer !== 'object') {
                 res.status(400).json(ResponseMessage().errorMessage(res.statusCode, customer))
-                return
+                return;
             }
             res.json(ResponseMessage().successMessage(res.statusCode, 'SUCCESS', customer))
         } catch (err) {
@@ -61,11 +61,11 @@ const CustomerController = (customerService) => {
         try {
             const { id } = req.params;
             const customer = await removeCustomer(id);
-            if (typeof customer !== 'object') {
+            if (customer !== 1) {
                 res.status(400).json(ResponseMessage().errorMessage(res.statusCode, customer))
-                return
+                return;
             }
-            res.json(ResponseMessage().successMessage(res.statusCode, 'SUCCESS', customer))
+            res.status(204).json(ResponseMessage().successMessage(res.statusCode, ''))
         } catch (err) {
             res.status(400).json(ResponseMessage().errorMessage(res.statusCode, err.message))
         }
