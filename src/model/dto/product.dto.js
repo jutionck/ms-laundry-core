@@ -1,6 +1,5 @@
 const ProductDto = (products, index) => {
     if (products[index]) {
-        console.log('here')
         const {id, price, isActive} = products[index].mst_product_prices[0];
         return {
             id: products[index].id,
