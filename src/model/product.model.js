@@ -8,7 +8,6 @@ module.exports = (db) => {
             primaryKey: true
         },
         name: DataTypes.STRING(40),
-        duration: DataTypes.INTEGER,
     }, {
         freezeTableName: true,
         underscored: true,

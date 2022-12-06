@@ -1,15 +1,11 @@
 const ResponseMessage = require('../../shared/model/response');
-const CustomerController = (customerService) => {
-    const { registerNewCustomer, findAllCustomer, findCustomerById, removeCustomer, updateOldCustomer } = customerService();
+const ProductController = (productService) => {
+    const { registerNewProduct, findAllProduct, findProductById, removeProduct, updateOldProduct } = productService();
 
     const create = async (req, res) => {
         try {
             const payload = req.body;
-            const customer = await registerNewCustomer(payload);
-            if (typeof customer !== 'object') {
-                res.status(400).json(ResponseMessage().errorMessage(res.statusCode, customer))
-                return
-            }
+            const customer = await registerNewProduct(payload);
             res.json(ResponseMessage().successMessage(res.statusCode, 'SUCCESS', customer))
         } catch (err) {
             res.status(400).json(ResponseMessage().errorMessage(res.statusCode, err.message))
@@ -19,7 +15,7 @@ const CustomerController = (customerService) => {
     const list = async (req, res) => {
         try {
             const { keyword, page, size, sortBy, sortType } = req.query
-            const { count, rows } = await findAllCustomer(keyword, page, size, sortBy, sortType);
+            const { count, rows } = await findAllProduct(keyword, page, size, sortBy, sortType);
             res.json(ResponseMessage().pagination(
                 res.statusCode, 'SUCCESS', rows,
                 keyword, page, count, size, sortBy, sortType
@@ -32,11 +28,7 @@ const CustomerController = (customerService) => {
     const findById = async (req, res) => {
         try {
             const { id } = req.params;
-            const customer = await findCustomerById(id);
-            if (typeof customer !== 'object') {
-                res.status(400).json(ResponseMessage().errorMessage(res.statusCode, customer))
-                return
-            }
+            const customer = await findProductById(id);
             res.json(ResponseMessage().successMessage(res.statusCode, 'SUCCESS', customer))
         } catch (err) {
             res.status(400).json(ResponseMessage().errorMessage(res.statusCode, err.message))
@@ -46,11 +38,7 @@ const CustomerController = (customerService) => {
     const update = async (req, res) => {
         try {
             const payload = req.body;
-            const customer = await updateOldCustomer(payload);
-            if (typeof customer !== 'object') {
-                res.status(400).json(ResponseMessage().errorMessage(res.statusCode, customer))
-                return
-            }
+            const customer = await updateOldProduct(payload);
             res.json(ResponseMessage().successMessage(res.statusCode, 'SUCCESS', customer))
         } catch (err) {
             res.status(400).json(ResponseMessage().errorMessage(res.statusCode, err.message))
@@ -60,11 +48,7 @@ const CustomerController = (customerService) => {
     const remove = async (req, res) => {
         try {
             const { id } = req.params;
-            const customer = await removeCustomer(id);
-            if (typeof customer !== 'object') {
-                res.status(400).json(ResponseMessage().errorMessage(res.statusCode, customer))
-                return
-            }
+            const customer = await removeProduct(id);
             res.json(ResponseMessage().successMessage(res.statusCode, 'SUCCESS', customer))
         } catch (err) {
             res.status(400).json(ResponseMessage().errorMessage(res.statusCode, err.message))
@@ -75,4 +59,4 @@ const CustomerController = (customerService) => {
     }
 }
 
-module.exports = CustomerController;
+module.exports = ProductController;

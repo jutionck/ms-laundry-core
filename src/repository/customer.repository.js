@@ -1,9 +1,17 @@
 const Customer = require('../model/customer.model');
-const {Op} = require('sequelize');
+const {Op, Error} = require('sequelize');
 
 const CustomerRepository = (db) => {
     const create = async (payload) => {
         try {
+            if (await isNameExist(payload.name)) {
+                return `Customer with name ${payload.name} already exist`;
+            }
+
+            if (await isPhoneNumberExist(payload.phoneNumber)) {
+                return `Customer with phone number ${payload.phoneNumber} already exist`;
+            }
+
             return await Customer(db).create(payload);
         } catch (err) {
             err.message;
@@ -56,12 +64,55 @@ const CustomerRepository = (db) => {
         try {
             const customer = await Customer(db).findByPk(payload.id);
             if (!customer) return `Customer with value ID ${payload.id} not found!`;
-            return await Customer(db).update(payload, {
-                where: { id: payload.id }
+
+            if (await isNameExist(payload.name, payload.id)) {
+                return `Customer with name ${payload.name} already exist`;
+            }
+
+            if (await isPhoneNumberExist(payload.phoneNumber, payload.id)) {
+                return `Customer with phone number ${payload.phoneNumber} already exist`;
+            }
+
+            const result = await Customer(db).update(payload, {
+                where: { id: payload.id },
+                returning: true,
             });
+            return result[1][0];
         } catch (err) {
             return err.message
         }
+    }
+
+    const isNameExist = async (name, excludeId) => {
+        if (excludeId) {
+            return await Customer(db).findOne({
+                where: {
+                    name: name,
+                    id: { [Op.ne] : excludeId }
+                }
+            });
+        }
+        return await Customer(db).findOne({
+            where: {
+                name: name
+            }
+        });
+    }
+
+    const isPhoneNumberExist = async (phoneNumber, excludeId) => {
+        if (excludeId) {
+            return await Customer(db).findOne({
+                where: {
+                    phoneNumber: phoneNumber,
+                    id: { [Op.ne] : excludeId }
+                }
+            });
+        }
+        return await Customer(db).findOne({
+            where: {
+                phoneNumber: phoneNumber
+            }
+        });
     }
 
     return {

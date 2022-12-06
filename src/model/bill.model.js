@@ -7,7 +7,8 @@ module.exports = (db) => {
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
         },
-        transDate: DataTypes.DATE
+        transDate: DataTypes.DATE,
+        duration: DataTypes.INTEGER,
     }, {
         freezeTableName: true,
         underscored: true,

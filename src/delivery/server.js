@@ -10,6 +10,8 @@ const CustomerController = require('./controller/customer.controller');
 const CustomerRoute = require('./route/customer.route');
 const AppRoute = require('./route/app.route');
 const DbMigration = require('../config/db-migration');
+const ProductController = require('./controller/product.controller');
+const ProductRoute = require('./route/product.route');
 
 const Server = () => {
     const { host, port } = Config();
@@ -23,9 +25,14 @@ const Server = () => {
         return CustomerRoute(customerController);
     }
 
+    const initProductRoute = () => {
+        const productController = () => ProductController(serviceManager().productService());
+        return ProductRoute(productController);
+    }
+
     const initController = () => {
         app.use(jsonMiddleware);
-        app.use(AppRoute(initCustomerRoute()));
+        app.use(AppRoute(initCustomerRoute(), initProductRoute()));
     }
 
     const run = () => {
